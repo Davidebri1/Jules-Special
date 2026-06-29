@@ -23,7 +23,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled }) => {
       <View style={[styles.inputWrapper, disabled && styles.disabledWrapper]}>
         <TextInput
           style={styles.input}
-          placeholder="I want to start a business..."
+          placeholder="Research, plan, or solve a problem..."
           placeholderTextColor={theme.colors.textMuted}
           value={text}
           onChangeText={setText}
@@ -45,19 +45,17 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled }) => {
 const styles = StyleSheet.create({
   container: {
     padding: theme.spacing.md,
-    backgroundColor: theme.colors.background,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+    backgroundColor: 'transparent',
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.surfaceVariant,
+    backgroundColor: theme.colors.surfaceVariant, // Slightly opaque
     borderRadius: theme.borderRadius.full,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: theme.colors.border,
   },
   disabledWrapper: {
     opacity: 0.7,
@@ -67,7 +65,7 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     maxHeight: 100,
     minHeight: 40,
-    paddingTop: 10, // Adjust for multiline alignment
+    paddingTop: 10,
   },
   sendButton: {
     backgroundColor: theme.colors.primary,

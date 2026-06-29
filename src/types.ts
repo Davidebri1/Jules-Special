@@ -1,4 +1,4 @@
-export type MessageSender = 'user' | 'orchestrator';
+export type MessageSender = 'user' | 'orchestrator' | 'models';
 
 export interface ActionWidgetProps {
   id: string;
@@ -7,17 +7,31 @@ export interface ActionWidgetProps {
   cost: number;
 }
 
+export interface ModelResponse {
+  modelId: string;
+  modelName: string;
+  text: string;
+}
+
 export interface Message {
   id: string;
   sender: MessageSender;
   text: string;
   widget?: ActionWidgetProps;
-  analysis?: string[]; // Used by orchestrator to break down steps
+  analysis?: string[];
+  modelResponses?: ModelResponse[];
 }
 
 export interface ExpertModel {
   id: string;
   name: string;
   lens: string;
-  costMultiplier: number; // e.g., 1.0, 1.5
+  costMultiplier: number;
+}
+
+export interface Wallpaper {
+  id: string;
+  name: string;
+  value: string; // color hex or gradient placeholder
+  type: 'color' | 'image';
 }

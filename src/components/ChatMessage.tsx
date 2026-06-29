@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme/theme';
 import { Message } from '../types';
 import { ActionWidget } from './ActionWidget';
+import { MultiModelGrid } from './MultiModelGrid';
 
 interface ChatMessageProps {
   message: Message;
@@ -12,6 +13,15 @@ interface ChatMessageProps {
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onWidgetPress }) => {
   const isUser = message.sender === 'user';
+  const isModels = message.sender === 'models';
+
+  if (isModels && message.modelResponses) {
+    return (
+      <View style={styles.container}>
+        <MultiModelGrid responses={message.modelResponses} />
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, isUser ? styles.userContainer : styles.orchestratorContainer]}>
@@ -28,7 +38,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onWidgetPress
           </View>
         ) : (
           <View style={styles.orchestratorBubble}>
-            <Text style={styles.orchestratorText}>{message.text}</Text>
+            {!!message.text && <Text style={styles.orchestratorText}>{message.text}</Text>}
 
             {message.analysis && message.analysis.length > 0 && (
               <View style={styles.analysisContainer}>
@@ -87,8 +97,6 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: theme.borderRadius.sm,
   },
   orchestratorBubble: {
-    // Orchestrator messages might not have a distinct bubble background in a clean UI,
-    // but we'll pad it for alignment.
     paddingTop: theme.spacing.xs,
   },
   userText: {
@@ -101,7 +109,7 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.sm,
   },
   analysisContainer: {
-    backgroundColor: theme.colors.surfaceContainerLow,
+    backgroundColor: 'rgba(28, 27, 27, 0.7)',
     padding: theme.spacing.md,
     borderRadius: theme.borderRadius.md,
     borderWidth: 1,

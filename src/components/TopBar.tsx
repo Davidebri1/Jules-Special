@@ -5,15 +5,21 @@ import { theme } from '../theme/theme';
 
 interface TopBarProps {
   title?: string;
+  onWallpaperPress?: () => void;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ title = 'Collider AI' }) => {
+export const TopBar: React.FC<TopBarProps> = ({ title = 'Omni', onWallpaperPress }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
-      <TouchableOpacity style={styles.profileButton}>
-        <Ionicons name="person-circle-outline" size={32} color={theme.colors.text} />
-      </TouchableOpacity>
+      <View style={styles.actions}>
+        <TouchableOpacity style={styles.iconButton} onPress={onWallpaperPress}>
+          <Ionicons name="color-palette-outline" size={24} color={theme.colors.textMuted} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconButton}>
+          <Ionicons name="person-circle-outline" size={32} color={theme.colors.text} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -24,16 +30,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: theme.spacing.lg,
-    paddingTop: theme.spacing.xl, // Assuming no safe area view for simplicity in prototype, adjust if needed
+    paddingTop: theme.spacing.xl,
     paddingBottom: theme.spacing.md,
-    backgroundColor: theme.colors.background,
+    backgroundColor: 'transparent', // Let wallpaper show through
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
   },
   title: {
     ...theme.typography.title,
   },
-  profileButton: {
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
     padding: 4,
+    marginLeft: theme.spacing.sm,
   },
 });
