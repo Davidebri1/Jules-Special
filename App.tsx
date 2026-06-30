@@ -85,7 +85,6 @@ export default function App() {
     setSelectedWidget(null);
     setIsTyping(true);
 
-    // Simulate multi-model response
     setTimeout(() => {
       setIsTyping(false);
 
@@ -110,62 +109,76 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: activeWallpaper.value }]}>
-      <StatusBar style="light" />
-      <TopBar title="Maestro" onWallpaperPress={() => setShowWallpapers(true)} />
+    <View style={styles.webWrapper}>
+      <SafeAreaView style={[styles.container, { backgroundColor: activeWallpaper.value }]}>
+        <StatusBar style="light" />
+        <TopBar title="Maestro" onWallpaperPress={() => setShowWallpapers(true)} />
 
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoid}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <View style={styles.chatContainer}>
-          <FlatList
-            ref={flatListRef}
-            data={messages}
-            keyExtractor={item => item.id}
-            renderItem={({ item }) => (
-              <ChatMessage message={item} onWidgetPress={handleWidgetPress} />
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoid}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <View style={styles.chatContainer}>
+            <FlatList
+              ref={flatListRef}
+              data={messages}
+              keyExtractor={item => item.id}
+              renderItem={({ item }) => (
+                <ChatMessage message={item} onWidgetPress={handleWidgetPress} />
+              )}
+              contentContainerStyle={styles.listContent}
+              onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+            />
+            {isTyping && (
+              <View style={styles.typingIndicator}>
+                <ActivityIndicator color={theme.colors.primary} size="small" />
+              </View>
             )}
-            contentContainerStyle={styles.listContent}
-            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+          </View>
+
+          <ChatInput onSend={handleSend} disabled={isTyping} />
+        </KeyboardAvoidingView>
+
+        {selectedWidget && (
+          <EnsembleModal
+            visible={!!selectedWidget}
+            onClose={() => setSelectedWidget(null)}
+            widget={selectedWidget}
+            models={MOCK_MODELS}
+            onConfirm={handleOrchestrateConfirm}
           />
-          {isTyping && (
-            <View style={styles.typingIndicator}>
-              <ActivityIndicator color={theme.colors.primary} size="small" />
-            </View>
-          )}
-        </View>
+        )}
 
-        <ChatInput onSend={handleSend} disabled={isTyping} />
-      </KeyboardAvoidingView>
-
-      {selectedWidget && (
-        <EnsembleModal
-          visible={!!selectedWidget}
-          onClose={() => setSelectedWidget(null)}
-          widget={selectedWidget}
-          models={MOCK_MODELS}
-          onConfirm={handleOrchestrateConfirm}
+        <WallpaperSwitcher
+          visible={showWallpapers}
+          onClose={() => setShowWallpapers(false)}
+          wallpapers={WALLPAPERS}
+          selectedId={activeWallpaperId}
+          onSelect={(id) => {
+            setActiveWallpaperId(id);
+            setShowWallpapers(false);
+          }}
         />
-      )}
-
-      <WallpaperSwitcher
-        visible={showWallpapers}
-        onClose={() => setShowWallpapers(false)}
-        wallpapers={WALLPAPERS}
-        selectedId={activeWallpaperId}
-        onSelect={(id) => {
-          setActiveWallpaperId(id);
-          setShowWallpapers(false);
-        }}
-      />
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // Web wrapper to simulate a mobile device frame
+  webWrapper: {
+    flex: 1,
+    backgroundColor: '#000', // Black background behind the "phone" on web
+    alignItems: Platform.OS === 'web' ? 'center' : 'stretch',
+  },
   container: {
     flex: 1,
+    width: '100%',
+    maxWidth: Platform.OS === 'web' ? 480 : '100%', // Limit width on web
+    shadowColor: '#6366f1',
+    shadowOpacity: Platform.OS === 'web' ? 0.2 : 0,
+    shadowRadius: 50,
+    elevation: 0,
   },
   keyboardAvoid: {
     flex: 1,
