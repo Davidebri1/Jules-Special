@@ -8,7 +8,7 @@ interface TopBarProps {
   onWallpaperPress?: () => void;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ title = 'Omni', onWallpaperPress }) => {
+export const TopBar: React.FC<TopBarProps> = ({ title = 'Maestro', onWallpaperPress }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>

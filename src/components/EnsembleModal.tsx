@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme/theme';
 import { ExpertModel, ActionWidgetProps } from '../types';
 
-interface CollideModalProps {
+interface EnsembleModalProps {
   visible: boolean;
   onClose: () => void;
   widget: ActionWidgetProps;
@@ -12,7 +12,7 @@ interface CollideModalProps {
   onConfirm: (selectedModelIds: string[], totalCost: number) => void;
 }
 
-export const CollideModal: React.FC<CollideModalProps> = ({ visible, onClose, widget, models, onConfirm }) => {
+export const EnsembleModal: React.FC<EnsembleModalProps> = ({ visible, onClose, widget, models, onConfirm }) => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const toggleModel = (id: string) => {
@@ -22,7 +22,7 @@ export const CollideModal: React.FC<CollideModalProps> = ({ visible, onClose, wi
   };
 
   const calculateTotalCost = () => {
-    if (selectedIds.length === 0) return 0; // Or return base cost if always charging something
+    if (selectedIds.length === 0) return 0;
     let multiplierSum = selectedIds.reduce((sum, id) => {
       const model = models.find(m => m.id === id);
       return sum + (model ? model.costMultiplier : 0);
@@ -37,7 +37,7 @@ export const CollideModal: React.FC<CollideModalProps> = ({ visible, onClose, wi
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Evaluate with other Models</Text>
+            <Text style={styles.headerTitle}>Assemble your Ensemble</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <Ionicons name="close" size={24} color={theme.colors.textMuted} />
             </TouchableOpacity>
@@ -77,7 +77,7 @@ export const CollideModal: React.FC<CollideModalProps> = ({ visible, onClose, wi
               disabled={selectedIds.length === 0}
             >
               <Text style={styles.confirmText}>
-                {selectedIds.length === 0 ? 'Select models' : `Generate Alternatives • ${totalCost} Credits`}
+                {selectedIds.length === 0 ? 'Select models' : `Orchestrate • ${totalCost} Credits`}
               </Text>
             </TouchableOpacity>
           </View>

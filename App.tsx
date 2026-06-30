@@ -5,7 +5,7 @@ import { theme } from './src/theme/theme';
 import { TopBar } from './src/components/TopBar';
 import { ChatInput } from './src/components/ChatInput';
 import { ChatMessage } from './src/components/ChatMessage';
-import { CollideModal } from './src/components/CollideModal';
+import { EnsembleModal } from './src/components/EnsembleModal';
 import { WallpaperSwitcher } from './src/components/WallpaperSwitcher';
 import { Message, ExpertModel, ActionWidgetProps, Wallpaper, ModelResponse } from './src/types';
 
@@ -81,7 +81,7 @@ export default function App() {
     }
   };
 
-  const handleCollideConfirm = (selectedModelIds: string[], totalCost: number) => {
+  const handleOrchestrateConfirm = (selectedModelIds: string[], totalCost: number) => {
     setSelectedWidget(null);
     setIsTyping(true);
 
@@ -112,7 +112,7 @@ export default function App() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: activeWallpaper.value }]}>
       <StatusBar style="light" />
-      <TopBar title="Omni" onWallpaperPress={() => setShowWallpapers(true)} />
+      <TopBar title="Maestro" onWallpaperPress={() => setShowWallpapers(true)} />
 
       <KeyboardAvoidingView
         style={styles.keyboardAvoid}
@@ -140,12 +140,12 @@ export default function App() {
       </KeyboardAvoidingView>
 
       {selectedWidget && (
-        <CollideModal
+        <EnsembleModal
           visible={!!selectedWidget}
           onClose={() => setSelectedWidget(null)}
           widget={selectedWidget}
           models={MOCK_MODELS}
-          onConfirm={handleCollideConfirm}
+          onConfirm={handleOrchestrateConfirm}
         />
       )}
 
