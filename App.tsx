@@ -7,13 +7,7 @@ import { ChatInput } from './src/components/ChatInput';
 import { ChatMessage } from './src/components/ChatMessage';
 import { EnsembleModal } from './src/components/EnsembleModal';
 import { WallpaperSwitcher } from './src/components/WallpaperSwitcher';
-import { Message, ExpertModel, ActionWidgetProps, Wallpaper, ModelResponse } from './src/types';
-
-const INITIAL_GREETING: Message = {
-  id: 'msg-0',
-  sender: 'orchestrator',
-  text: 'What would you like to explore or achieve today?',
-};
+import { Message, ExpertModel, Wallpaper, ModelResponse } from './src/types';
 
 const WALLPAPERS: Wallpaper[] = [
   { id: 'wp-1', name: 'Obsidian (Default)', type: 'color', value: '#0A0A0A' },
@@ -35,9 +29,9 @@ const MOCK_MODELS: ExpertModel[] = [
 ];
 
 export default function App() {
-  const [messages, setMessages] = useState<Message[]>([INITIAL_GREETING]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
-  const [selectedWidget, setSelectedWidget] = useState<ActionWidgetProps | null>(null);
+  const [showEnsembleModal, setShowEnsembleModal] = useState(false);
   const [activeWallpaperId, setActiveWallpaperId] = useState(WALLPAPERS[0].id);
   const [showWallpapers, setShowWallpapers] = useState(false);
 
@@ -50,39 +44,29 @@ export default function App() {
     setMessages(prev => [...prev, newUserMsg]);
     setIsTyping(true);
 
+    // Standard open-ended single-model response
     setTimeout(() => {
       setIsTyping(false);
       const orchestratorResponse: Message = {
         id: (Date.now() + 1).toString(),
         sender: 'orchestrator',
-        text: 'I can help you explore that. Here is a breakdown of how we might approach it:',
-        analysis: [
-          'Initial scoping and research',
-          'Evaluating technical or creative constraints',
-          'Executing the proposed solution'
-        ],
-        widget: {
-          id: 'wid-1',
-          title: 'Deep Dive Analysis',
-          description: 'Generate a comprehensive report covering all facets of your request.',
-          cost: 10
-        }
+        text: 'I understand. Let me help you with that. Here are some thoughts based on what you asked...',
       };
       setMessages(prev => [...prev, orchestratorResponse]);
     }, 1500);
   };
 
-  const handleWidgetPress = (widgetId: string) => {
-    for (const msg of messages) {
-      if (msg.widget && msg.widget.id === widgetId) {
-        setSelectedWidget(msg.widget);
-        break;
-      }
-    }
-  };
-
   const handleOrchestrateConfirm = (selectedModelIds: string[], totalCost: number) => {
-    setSelectedWidget(null);
+    setShowEnsembleModal(false);
+
+    // We append a system message indicating what is happening,
+    // since the user hasn't typed anything new yet but triggered an ensemble action.
+    const initiateMsg: Message = {
+        id: Date.now().toString(),
+        sender: 'orchestrator',
+        text: `Consulting ${selectedModelIds.length} expert models for the current context. (Cost: ${totalCost} Credits)`
+    };
+    setMessages(prev => [...prev, initiateMsg]);
     setIsTyping(true);
 
     setTimeout(() => {
@@ -93,12 +77,12 @@ export default function App() {
         return {
           modelId: model.id,
           modelName: model.name,
-          text: `[Simulated response from ${model.name}]\nBased on the lens of ${model.lens.toLowerCase()}, here is the tailored output for your request. This approach prioritizes specific methodologies relevant to this domain.`
+          text: `[Response from ${model.name}]\nAnalyzing your latest context through the lens of ${model.lens.toLowerCase()} Here is my perspective.`
         };
       });
 
       const multiModelMessage: Message = {
-        id: Date.now().toString(),
+        id: (Date.now() + 1).toString(),
         sender: 'models',
         text: '',
         modelResponses: generatedResponses
@@ -123,9 +107,7 @@ export default function App() {
               ref={flatListRef}
               data={messages}
               keyExtractor={item => item.id}
-              renderItem={({ item }) => (
-                <ChatMessage message={item} onWidgetPress={handleWidgetPress} />
-              )}
+              renderItem={({ item }) => <ChatMessage message={item} />}
               contentContainerStyle={styles.listContent}
               onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
             />
@@ -136,18 +118,20 @@ export default function App() {
             )}
           </View>
 
-          <ChatInput onSend={handleSend} disabled={isTyping} />
+          <ChatInput
+            onSend={handleSend}
+            onOpenEnsemble={() => setShowEnsembleModal(true)}
+            disabled={isTyping}
+          />
         </KeyboardAvoidingView>
 
-        {selectedWidget && (
-          <EnsembleModal
-            visible={!!selectedWidget}
-            onClose={() => setSelectedWidget(null)}
-            widget={selectedWidget}
-            models={MOCK_MODELS}
-            onConfirm={handleOrchestrateConfirm}
-          />
-        )}
+        <EnsembleModal
+          visible={showEnsembleModal}
+          onClose={() => setShowEnsembleModal(false)}
+          widget={{ id: 'current-context', title: 'Evaluate Context', description: 'Select models to evaluate the ongoing conversation.', cost: 10 }}
+          models={MOCK_MODELS}
+          onConfirm={handleOrchestrateConfirm}
+        />
 
         <WallpaperSwitcher
           visible={showWallpapers}
@@ -165,16 +149,15 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  // Web wrapper to simulate a mobile device frame
   webWrapper: {
     flex: 1,
-    backgroundColor: '#000', // Black background behind the "phone" on web
+    backgroundColor: '#000',
     alignItems: Platform.OS === 'web' ? 'center' : 'stretch',
   },
   container: {
     flex: 1,
     width: '100%',
-    maxWidth: Platform.OS === 'web' ? 480 : '100%', // Limit width on web
+    maxWidth: Platform.OS === 'web' ? 480 : '100%',
     shadowColor: '#6366f1',
     shadowOpacity: Platform.OS === 'web' ? 0.2 : 0,
     shadowRadius: 50,

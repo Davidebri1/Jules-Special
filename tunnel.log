@@ -7,3 +7,6 @@ Waiting on http://localhost:8081
 An update for expo is available: 56.0.12 → ~56.0.14
 1 other package may need updating. Run npx expo install --check for details.
 Logs for your project will appear below.
+Tunnel connection has been closed. This is often related to intermittent connection issues between the dev server and ngrok. Restart the dev server to try connecting to ngrok again.
+Check the Ngrok status page for outages: https://status.ngrok.com/
+Tunnel connected.
